@@ -4,13 +4,13 @@ const User = require('../models/user.model').User
 const registerUser = async (req,res) => {
     try{
         console.log('user Details: ', req.body)
-        const user = User.findOne({email : req.body.email});
-        const userUsername = User.findOne({username : req.body.username});
+        const user = await User.findOne({email : req.body.email});
+        const userUsername = await User.findOne({username : req.body.username});
         if(user){
-            res.send("The person with this email already exists");
+          return  res.send("The person with this email already exists");
         }
         if(userUsername){
-            res.send("Username already exists");
+           return res.send("Username already exists");
         }
         let userData = User({
             username: req.body.username,
@@ -36,4 +36,34 @@ const getUser = async(req,res) => {
     }
 }
 
-module.exports = { registerUser,getUser }
+const updateUserById = async(req,res)=>{
+    try{
+
+        const id = req.params.id;
+        const user = await User.findByIdAndUpdate(id,{
+            username : "dorae"
+        });
+        if(!user){
+            res.send("Something went wrong");
+        }
+        res.send(user);
+    }catch(err){
+        console.log(err);
+    }
+}
+
+const deleteUserById = async(req,res)=>{
+    try{
+        const user = await User.findByIdAndDelete(req.params.id);
+        if(!user){
+            return res.send("Something went wrong");
+        }
+        res.send("DELETED!");
+    }catch(err){
+        console.log(err);
+    }
+}
+
+
+
+module.exports = { registerUser,getUser ,updateUserById,deleteUserById}
